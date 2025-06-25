@@ -18,8 +18,8 @@ search_client = SearchClient(endpoint=AZURE_ENDPOINT,
                              index_name=INDEX_NAME,
                              credential=AzureKeyCredential(AZURE_API_KEY))
 
-# File and model setup
-folder_path = r"C:\Users\bhavy\RAG Prototype Azure\files"
+# File and model setup (Change according to where your)
+folder_path = r"C:\\Users\\bhavy\\RAG Prototype 3\\rag-app-3\\src\\Backend\\files"
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Text splitting config
