@@ -73,7 +73,11 @@ def ask_query(payload: QueryRequest):
     matched_sources = get_relevant_sources_from_llm(query, known_sources)
     print("Matched sources:", matched_sources)
 
-    azure_filter = (" or ".join([f"source eq '{s.replace("'", "''")}" for s in matched_sources]) if matched_sources else None)
+    if matched_sources:
+        azure_filter = " or ".join([f"(source eq '{s}')" for s in matched_sources])
+    else:
+        azure_filter = None
+
     print("Azure filter:", azure_filter)
 
     # Scale top_k by document count

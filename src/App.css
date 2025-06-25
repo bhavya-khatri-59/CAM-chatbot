@@ -36,3 +36,77 @@
     transform: rotate(360deg);
   }
 }
+
+body {
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #111;
+  color: white;
+}
+
+.app {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 150, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #0f0;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #0f0;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.response {
+  margin-top: 20px;
+  background-color: #181818;
+  padding: 15px;
+  border-radius: 5px;
+  white-space: pre-wrap;
+  border: 1px solid #333;
+
+}
+
+.response-box {
+  background-color: #1a1a1a;
+  color: #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  margin-top: 1rem;
+  max-width: 90%;
+  overflow-x: auto;
+  white-space: pre-wrap;      /* important for multi-line responses */
+  word-wrap: break-word;      /* breaks long words */
+  overflow-wrap: break-word;  /* breaks long words */
+}
