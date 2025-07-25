@@ -32,7 +32,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>RAG Chatbot</h1>
+      <h1>CAM Chatbot</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"

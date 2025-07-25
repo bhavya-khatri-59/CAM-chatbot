@@ -20,7 +20,7 @@ FILE_DIR = r"C:\\Users\\bhavy\\RAG Prototype 3\\rag-app-3\\src\\Backend\\files"
 
 # Init services
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel("gemini-2.0-flash")
+model = genai.GenerativeModel("gemini-2.5-pro")
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 search_client = SearchClient(endpoint=AZURE_ENDPOINT, index_name=AZURE_INDEX, credential=AzureKeyCredential(AZURE_KEY))
 

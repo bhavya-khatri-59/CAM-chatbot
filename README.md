@@ -1,70 +1,112 @@
-# Getting Started with Create React App
+# 🤖 CAM Chatbot (LLM‑RAG for Credit Appraisal)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A Retrieval-Augmented Generation (RAG) chatbot built to assist credit teams in querying Credit Appraisal Memoranda (CAM) documents. The system intelligently retrieves relevant chunks from internal PDFs and uses **Gemini 2.5 Pro** to generate grounded, structured answers.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📌 Overview
 
-### `npm start`
+This chatbot serves as an AI assistant for internal credit analysts. Given a query, it:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Identifies relevant companies using an LLM (Gemini).
+2. Filters and performs a hybrid search (semantic + vector) on preprocessed CAM documents.
+3. Passes context back to Gemini 2.5 Pro for response generation.
+4. Returns structured, citation-grounded answers.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🧠 System Architecture (Mermaid.js)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```mermaid
+flowchart TD
+  A[User enters query] --> B[Gemini 2.5 Pro<br/>identifies relevant companies]
+  B --> C[Trigger Hybrid Search<br/>(Azure Cognitive Search)]
+  C --> D1[Semantic Search (BM25)]
+  C --> D2[Vector Search (HNSW using SentenceTransformer)]
+  D1 --> E[Relevant chunks retrieved]
+  D2 --> E
+  E --> F[Assemble context]
+  F --> G[Gemini 2.5 Pro<br/>generates grounded response]
+  G --> H[Return answer to React Frontend]
 
-### `npm run build`
+🛠 Tech Stack
+| Layer               | Technology                                      |
+| ------------------- | ----------------------------------------------- |
+| Backend API         | FastAPI                                         |
+| LLM                 | Gemini 2.5 Pro (1M token context)               |
+| Embedding Model     | SentenceTransformer (all-MiniLM-L6-v2)          |
+| Search Engine       | Azure Cognitive Search (Hybrid: BM25 + HNSW)    |
+| Document Processing | LangChain (PDF chunking + metadata)             |
+| Frontend            | React                                           |
+| Deployment Ready    | Azure AD, Microsoft Teams integration (planned) |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+⚙️ RAG Pipeline Details
+🔍 Step 1: Query Understanding via LLM
+Gemini 2.5 Pro is prompted with the user's query.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Identifies 1 or more relevant companies from a list of ~10,000 known entities.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+🔎 Step 2: Hybrid Search on Azure Cognitive Search
+Semantic Search using BM25 (keyword-based relevance).
 
-### `npm run eject`
+Vector Search using HNSW (approx. nearest neighbor search on dense vectors).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Both scores are fused to retrieve the most relevant document chunks.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+🧩 Step 3: Document Ingestion & Indexing
+PDFs chunked using LangChain, preserving semantic structure.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Each chunk is embedded via all-MiniLM-L6-v2.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Indexed in Azure with metadata:
 
-## Learn More
+companyName
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+source
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+sector
 
-### Code Splitting
+pageNumber
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+🧠 Step 4: Context Assembly & Prompting
+Retrieved chunks are dynamically selected based on:
 
-### Analyzing the Bundle Size
+Number of companies identified
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Query length and specificity
 
-### Making a Progressive Web App
+Context is constructed with citations and metadata.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+🗣 Step 5: Response Generation via Gemini
+Gemini receives a carefully designed prompt with retrieved context.
 
-### Advanced Configuration
+Generates a structured and grounded answer.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+No hallucination: responses strictly cite indexed chunks.
 
-### Deployment
+🧪 Performance Optimizations
+Chunk Retrieval Tuning: Trade-off between context quality and latency.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Dynamic Context Scaling: Adjusts number of chunks based on query complexity.
 
-### `npm run build` fails to minify
+Prompt Engineering: Designed to enforce factuality, avoid hallucinations.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Company Matching: Gemini performs fuzzy entity matching internally.
+
+🌐 Frontend Overview
+
+Built with React.
+
+Provides a minimal, clean chatbot interface.
+
+Sends user queries to the FastAPI backend.
+
+Displays LLM-generated responses along with any relevant citations.
+
+🔒 Security & Deployment Plans
+
+Integrate with Azure Active Directory (AAD) for access control.
+
+Embed in Microsoft Teams as a chatbot tool.
+
+Potential expansion to role-based filtering on document access.
