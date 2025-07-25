@@ -19,15 +19,18 @@ This chatbot serves as an AI assistant for internal credit analysts. Given a que
 
 ```mermaid
 flowchart TD
-  A[User enters query] --> B[Gemini 2.5 Pro identifies relevant companies]
-  B --> C[Trigger Hybrid Search via Azure Cognitive Search]
-  C --> D1[Semantic Search (BM25)]
-  C --> D2[Vector Search (HNSW using SentenceTransformer)]
-  D1 --> E[Relevant chunks retrieved]
-  D2 --> E
-  E --> F[Assemble context]
-  F --> G[Gemini 2.5 Pro generates grounded response]
-  G --> H[Return answer to React Frontend]
+    A[User enters query in UI] --> B[Send query to FastAPI backend]
+    B --> C[Generate embedding using MiniLM]
+    C --> D[Query Azure Cognitive Search]
+    D --> E1[Semantic search - text]
+    D --> E2[Vector search - embedding]
+    E1 --> F[Collect relevant text chunks]
+    E2 --> F
+    F --> G[Build context string]
+    G --> H[Send context + query to Gemini API]
+    H --> I[LLM generates answer]
+    I --> J[Send answer back to UI]
+```
 
 🛠 Tech Stack
 | Layer               | Technology                                      |
