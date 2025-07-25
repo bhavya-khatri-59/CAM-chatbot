@@ -19,14 +19,14 @@ This chatbot serves as an AI assistant for internal credit analysts. Given a que
 
 ```mermaid
 flowchart TD
-  A[User enters query] --> B[Gemini 2.5 Pro<br/>identifies relevant companies]
-  B --> C[Trigger Hybrid Search<br/>(Azure Cognitive Search)]
+  A[User enters query] --> B[Gemini 2.5 Pro identifies relevant companies]
+  B --> C[Trigger Hybrid Search via Azure Cognitive Search]
   C --> D1[Semantic Search (BM25)]
   C --> D2[Vector Search (HNSW using SentenceTransformer)]
   D1 --> E[Relevant chunks retrieved]
   D2 --> E
   E --> F[Assemble context]
-  F --> G[Gemini 2.5 Pro<br/>generates grounded response]
+  F --> G[Gemini 2.5 Pro generates grounded response]
   G --> H[Return answer to React Frontend]
 
 🛠 Tech Stack
